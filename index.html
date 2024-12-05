@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recherche de Documents</title>
+    <style>
+        /* Style général */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Formulaire */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        form label {
+            font-weight: bold;
+        }
+        form input[type="text"] {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        form button {
+            padding: 10px;
+            font-size: 1rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        form button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Résultats */
+        .results h2 {
+            font-size: 1.5rem;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        .results-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .result-item {
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            transition: transform 0.2s ease;
+        }
+        .result-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Recherche de Documents</h1>
+    </header>
+    <div class="container">
+        <form id="search-form">
+            <label for="query">Entrez un mot-clé :</label>
+            <input type="text" id="query" name="query" placeholder="Saisissez un mot-clé..." required>
+            <button type="submit">Rechercher</button>
+        </form>
+
+        <div class="results">
+            <h2>Résultats :</h2>
+            <div id="results-container" class="results-container"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("search-form").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            
+            const query = document.getElementById("query").value;
+            const response = await fetch(`/search?query=${encodeURIComponent(query)}`);
+            const data = await response.json();
+            
+            const resultsContainer = document.getElementById("results-container");
+            resultsContainer.innerHTML = ""; // Effacer les résultats précédents
+
+            if (data.documents === "Aucun résultat trouvé.") {
+                const noResult = document.createElement("p");
+                noResult.textContent = "Aucun résultat trouvé.";
+                noResult.style.color = "red";
+                resultsContainer.appendChild(noResult);
+            } else {
+                for (const [doc, freq] of Object.entries(data.documents)) {
+                    const resultItem = document.createElement("div");
+                    resultItem.className = "result-item";
+                    resultItem.textContent = `Document : ${doc}, Fréquence : ${freq}`;
+                    resultsContainer.appendChild(resultItem);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
