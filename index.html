@@ -5,129 +5,140 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recherche de Documents</title>
     <style>
-        /* Style général */
+        /* Styles généraux */
         body {
             font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f9;
-            color: #333;
+            margin: 20px;
+            background-color: #f9fafc;
+            color: #2c3e50;
+            line-height: 1.6;
         }
-        header {
-            background-color: #007bff;
-            color: #fff;
-            padding: 20px 0;
+    
+        /* Titre principal */
+        h1 {
+            color: #3498db;
             text-align: center;
-            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-        }
-        header h1 {
-            margin: 0;
-            font-size: 2.5rem;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Formulaire */
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            font-size: 2.5em;
             margin-bottom: 20px;
         }
-        form label {
+    
+        /* Formulaire */
+        form {
+            margin: 0 auto 50px auto;
+            max-width: 600px;
+            text-align: center;
+        }
+    
+        label {
             font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            color: #34495e;
         }
-        form input[type="text"] {
+    
+        input[type="text"] {
+            width: calc(100% - 30px);
+            max-width: 500px;
             padding: 10px;
-            font-size: 1rem;
+            margin: 10px 0;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 6px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
-        form button {
-            padding: 10px;
-            font-size: 1rem;
-            background-color: #007bff;
-            color: white;
+    
+        input[type="text"]:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+            outline: none;
+        }
+    
+        button {
+            padding: 12px 25px;
+            background-color: #3498db;
+            color: #fff;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
+            font-size: 1em;
             transition: background-color 0.3s ease;
         }
-        form button:hover {
-            background-color: #0056b3;
+    
+        button:hover {
+            background-color: #2980b9;
         }
-
+    
         /* Résultats */
+        .results {
+            margin-top: 30px;
+        }
+    
         .results h2 {
-            font-size: 1.5rem;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 5px;
-            margin-bottom: 10px;
+            color: #3498db;
+            text-align: center;
+            font-size: 1.8em;
+            margin-bottom: 20px;
         }
-        .results-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+    
         .result-item {
-            background-color: #f9f9f9;
-            border: 1px solid #ccc;
+            margin-bottom: 15px;
             padding: 10px;
-            border-radius: 5px;
-            transition: transform 0.2s ease;
+            border: 1px solid #ecf0f1;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
-        .result-item:hover {
-            transform: scale(1.02);
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    
+        .no-results {
+            color: #e74c3c;
+            font-weight: bold;
+            text-align: center;
+        }
+    
+        /* Centrage général */
+        .contrain {
+            text-align: center;
         }
     </style>
+    
 </head>
 <body>
-    <header>
-        <h1>Recherche de Documents</h1>
-    </header>
-    <div class="container">
-        <form id="search-form">
-            <label for="query">Entrez un mot-clé :</label>
-            <input type="text" id="query" name="query" placeholder="Saisissez un mot-clé..." required>
-            <button type="submit">Rechercher</button>
-        </form>
+    <h1>Système de Recherche d'Information</h1>
+    <form id="search-form">
+        <div class="contrain">
+        <label for="query">Entrez une requête booléenne :</label>
+        <input type="text" id="query" name="query" placeholder="Rechercher" required>
+        <button type="submit">Rechercher</button>
+    </div>
+    </form>
 
-        <div class="results">
-            <h2>Résultats :</h2>
-            <div id="results-container" class="results-container"></div>
-        </div>
+    <div class="results">
+        <h2>Résultats :</h2>
+        <div id="results-container"></div>
     </div>
 
     <script>
         document.getElementById("search-form").addEventListener("submit", async function(event) {
             event.preventDefault();
             
-            const query = document.getElementById("query").value;
+            const query = document.getElementById("query").value.trim();
             const response = await fetch(`/search?query=${encodeURIComponent(query)}`);
             const data = await response.json();
             
             const resultsContainer = document.getElementById("results-container");
             resultsContainer.innerHTML = ""; // Effacer les résultats précédents
 
-            if (data.documents === "Aucun résultat trouvé.") {
-                const noResult = document.createElement("p");
-                noResult.textContent = "Aucun résultat trouvé.";
-                noResult.style.color = "red";
-                resultsContainer.appendChild(noResult);
+            if (data.documents === "Aucun résultat trouvé." || data.documents.length === 0) {
+                const noResults = document.createElement("p");
+                noResults.className = "no-results";
+                noResults.textContent = "Aucun document trouvé pour la requête.";
+                resultsContainer.appendChild(noResults);
             } else {
-                for (const [doc, freq] of Object.entries(data.documents)) {
-                    const resultItem = document.createElement("div");
-                    resultItem.className = "result-item";
-                    resultItem.textContent = `Document : ${doc}, Fréquence : ${freq}`;
-                    resultsContainer.appendChild(resultItem);
+                for (const doc of data.documents) {
+                    const p = document.createElement("p");
+                    p.className = "result-item";
+                    p.textContent = `Document : ${doc}`;
+                    resultsContainer.appendChild(p);
                 }
             }
         });
